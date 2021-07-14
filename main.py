@@ -1,33 +1,41 @@
 import tensorflow as tf
-import csv
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+import matplotlib.pyplot as plt
+import os
+import re
+import shutil
+import string
+import tensorflow as tf
 
 
-# This is a sample Python script.
+def main():
+    data = pd.read_csv('data.csv')
+    data.pop('Commit A')
+    data.pop('Commit B')
+    data.pop('Benchmark')
+    data.pop('Top Chg by Instr >= X%')
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+    features = data.copy()
+    labels = features.pop('Hit/Dismiss')
 
+    features = np.asarray(features).astype('float32')
 
-def print_hi(name):
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(47,)),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(10)
+        tf.keras.layers.Dense(46),
+        tf.keras.layers.Dense(128),
+        tf.keras.layers.Dense(128),
+        tf.keras.layers.Dense(1)
     ])
-    loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-    model.compile(optimizer='adam',
-                  loss=loss_fn,
+
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                  optimizer=tf.keras.optimizers.Adam(),
                   metrics=['accuracy'])
-    with open('dataset.csv', newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-        model.fit(reader, epochs=1)
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+
+    model.fit(features, labels, epochs=10)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()
