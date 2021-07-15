@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+import sklearn
+
 import matplotlib.pyplot as plt
 import os
 import re
@@ -46,7 +48,11 @@ def main():
     test = np.asarray(test).astype('float32')
 
     normalize = tf.keras.layers.experimental.preprocessing.Normalization()
+    normalize.compile()
     normalize.adapt(train)
+
+    print(normalize.count_params())
+    print(train)
 
     model = tf.keras.models.Sequential([
         normalize,
@@ -56,10 +62,10 @@ def main():
     ])
 
     model.compile(loss=tf.keras.losses.MeanSquaredError(),
-                  optimizer=tf.keras.optimizers.Adam(),
+                  optimizer=tf.keras.optimizers.Adam(learning_rate=0.00001),
                   metrics=['accuracy'])
 
-    model.fit(train, labels_train, epochs=10)
+    model.fit(train, labels_train, epochs=1)
 
     print("\npredict\n")
 
