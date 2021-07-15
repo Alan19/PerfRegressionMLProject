@@ -9,6 +9,7 @@ import re
 import shutil
 import string
 import tensorflow as tf
+from tensorflow.keras.layers.experimental import preprocessing
 
 
 def main():
@@ -33,6 +34,9 @@ def main():
     model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
                   optimizer=tf.keras.optimizers.Adam(),
                   metrics=['accuracy'])
+
+    normalize = preprocessing.Normalization()
+    normalize.adapt(features)
 
     model.fit(features, labels, epochs=10)
 
